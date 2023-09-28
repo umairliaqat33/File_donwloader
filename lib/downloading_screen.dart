@@ -83,17 +83,8 @@ class _DownloadingScreenState extends State<DownloadingScreen> {
             msg: directory.path,
           );
           String newPath = '';
-          // /storage/emulated/0/Android/data/com.example.file_downloader/files
-          List<String> folders = directory.path.split('/');
-          for (int x = 1; x < folders.length; x++) {
-            String folder = folders[x];
-            if (folder != 'Android') {
-              newPath += '/$folder';
-            } else {
-              break;
-            }
-          }
-          newPath = '$newPath/File Downloader';
+
+          newPath = '${directory.path}/File Downloader';
           directory = Directory(newPath);
           Fluttertoast.showToast(
             msg: directory.path,
@@ -128,7 +119,9 @@ class _DownloadingScreenState extends State<DownloadingScreen> {
         Fluttertoast.showToast(msg: "Storage permission denied");
       }
       log(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
     }
+    return null;
     // return null;
   }
 }
