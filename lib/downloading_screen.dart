@@ -95,6 +95,7 @@ class _DownloadingScreenState extends State<DownloadingScreen> {
         Fluttertoast.showToast(msg: "Storage permission denied");
       }
       log(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
     }
     return null;
   }
