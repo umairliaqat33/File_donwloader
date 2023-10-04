@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 // import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -54,8 +54,8 @@ class _DownloadingScreenState extends State<DownloadingScreen> {
     });
     bool? downloaded;
     downloaded = await saveFile(
-            "https://dt244.kokiuyar.xyz/download?file=ZGE0OWI3OWJlZGY5NzNkZThhMjQ1OTQxYmEwMGY0NWEyMmMxMWUxNTkwOWNhMTcxZWEyMzJlZjMxYWU0OWY1ZF83MjBwNjAubXA04pivWDJEb3dubG9hZC5hcHAtVG9wIEFkb3JhYmxlIEFuaW1lIEVsZiBDaGFyYWN0ZXJzIH4gRVhUUkVNRUxZIEJFQVVUSUZVTOKYrzcyMHA2MA",
-            "anime video.mp4") ??
+            "https://redirector.googlevideo.com/videoplayback?expire=1696438978&ei=YkYdZa2aLYyk1gKPo6-4Bw&ip=2a01%3A4f8%3A242%3A16d9%3A%3A2&id=o-AEmZQMaRbPHYiBLgpQXGmHFx0_IrG9L9we5a-0lDCUJb&itag=22&source=youtube&requiressl=yes&mh=hb&mm=31%2C29&mn=sn-4g5lzney%2Csn-4g5edndz&ms=au%2Crdu&mv=m&mvi=1&pl=51&initcwndbps=532500&siu=1&vprv=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=962.560&lmt=1673891074030100&mt=1696417073&fvip=1&fexp=24007246&beids=24350018&c=ANDROID_TESTSUITE&txp=6318224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Csiu%2Cvprv%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRAIgBqSCctLrieB6gh-ZDL8NeUx5i2epLpKd6WEHZG4Ql14CIHWhk9d6kvqLpqyR1EDy7sMh-CYN6s-Z4dcEfLHFUCn3&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRAIgB3t0utt95hITRKU0sg0_N6eNXuG1M2qBSw_kbYnsZcMCIGbsoPfE9xEe06WBnUgIWi35bvblbNJftScTwT9FTaGv&range=0-118866901&title=X2Download.app-Anime%20moment%20of%20impact%20makes%20the%20heart%20beat%20faster",
+            "X2Download.app-Anime moment of impact makes the heart beat faster-(720p60).mp4") ??
         false;
     if (downloaded) {
       log("file downloaded");
@@ -71,64 +71,31 @@ class _DownloadingScreenState extends State<DownloadingScreen> {
     PermissionStatus permissionStatus = await Permission.storage.request();
     Directory directory;
     try {
-      if (permissionStatus.isGranted) {
-        if (Platform.isAndroid) {
-          directory = (await getExternalStorageDirectory())!;
-          Fluttertoast.showToast(
-            msg: directory.path,
-            timeInSecForIosWeb: 4,
-          );
-          log(directory.path);
-          Fluttertoast.showToast(
-            msg: directory.path,
-          );
-          String newPath = '';
-          // /storage/emulated/0/Android/data/com.example.file_downloader/files
-          List<String> folders = directory.path.split('/');
-          for (int x = 1; x < folders.length; x++) {
-            String folder = folders[x];
-            if (folder != 'Android') {
-              newPath += '/$folder';
-            } else {
-              break;
-            }
-          }
-          newPath = '$newPath/File Downloader';
-          directory = Directory(newPath);
-          Fluttertoast.showToast(
-            msg: directory.path,
-            timeInSecForIosWeb: 4,
-          );
-          log(directory.path);
-        } else {
-          directory = await getTemporaryDirectory();
-        }
-        if (!await directory.exists()) {
-          await directory.create();
-        }
-        File savedFile = File('${directory.path}/$fileName');
-        if (await directory.exists()) {
-          await dio.download(url, savedFile.path,
-              onReceiveProgress: (downloaded, totalSize) {
-            setState(() {
-              progress = downloaded / totalSize;
-            });
-          });
-        }
-        if (Platform.isIOS) {
-          await ImageGallerySaver.saveFile(savedFile.path,
-              isReturnPathOfIOS: true);
-        }
-        return true;
-      } else {
-        return false;
-      }
+      directory = (await getExternalStorageDirectory())!;
+      Fluttertoast.showToast(
+        msg: directory.path,
+        timeInSecForIosWeb: 4,
+      );
+      log(directory.path);
+      directory = Directory('/storage/emulated/0/File Downloader');
+      log(directory.path);
+      File savedFile = File('${directory.path}/$fileName');
+      await dio.download(url, savedFile.path,
+          onReceiveProgress: (downloaded, totalSize) {
+        setState(() {
+          progress = downloaded / totalSize;
+        });
+      });
+      final result = await GallerySaver.saveVideo('${directory.path}/$fileName',
+          albumName: 'File Downloader');
+      log(result.toString());
+      return true;
     } catch (e) {
       if (permissionStatus.isDenied) {
         Fluttertoast.showToast(msg: "Storage permission denied");
       }
       log(e.toString());
     }
-    // return null;
+    return null;
   }
 }
